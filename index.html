@@ -181,6 +181,8 @@ html[data-paused] .silk-drift, html.silk-hidden .silk-drift { animation-play-sta
 main { position: relative; z-index: var(--ck-z-content); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .snap { position: absolute; left: 0; width: 1px; height: 1px; scroll-snap-align: start; pointer-events: none; }
+/* Every slide and every step is a hard stop: a fast swipe or flick lands on the next one instead of flying past it (fix 11/03) */
+.snap, .slide { scroll-snap-stop: always; }
 
 /* scenes */
 .slide { position: relative; min-height: 100svh; display: grid; align-content: center; scroll-snap-align: start; padding-block: calc(var(--margin) * .8);
