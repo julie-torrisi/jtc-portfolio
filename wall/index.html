@@ -21,21 +21,23 @@ img{display:block;user-select:none;-webkit-user-drag:none}
 #track{position:absolute;left:0;top:32px;height:1016px;will-change:transform}
 
 /* card frame: appears on the right as an empty box, then its component builds in */
-.t{position:absolute;border-radius:var(--r);background:rgba(36,35,42,.32);border:1px solid rgba(255,255,255,.07);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0);
-  opacity:0;transform:scale(.96);transition:opacity .5s var(--out-bold),transform .5s var(--out-bold),box-shadow .5s var(--out-bold)}
+.t{position:absolute;border-radius:var(--r);background:rgba(36,35,42,.45);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0);
+  opacity:0;transition:opacity .5s var(--out-bold),box-shadow .5s var(--out-bold);isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black)}
 /* incoming boxes are transparent dark frames; they fill and build only once fully in frame */
 .t>.fill{position:absolute;inset:0;border-radius:inherit;background:var(--tile);opacity:0;transition:opacity .5s var(--out-bold)}
 .t.filled>.fill{opacity:1}.t.filled{box-shadow:0 10px 30px rgba(0,0,0,.22)}
 /* light components sit on an inner white panel inside the dark tile (Eduardo's nested containers) */
 .panel{background:#fff;border-radius:14px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
 .t.pill .panel{border-radius:999px;padding:6px 14px}
+.t.big .panel{padding:46px 52px;border-radius:18px}
+.clip{display:block;object-fit:cover}
 .t.blue>.fill{background:var(--blue)}
 .t.media>.fill{background:#000 center/cover}
 .t.media>.fill::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.55))}
 /* voice: her waveform lives only inside the blue Messenger pill */
 .wave{position:absolute;left:109px;top:36px;width:226px;height:23px;background:#0C5CFF;opacity:0;transition:opacity .15s}
 .wave.on{opacity:1}.wave>img{position:absolute;left:0;top:0;opacity:0;transition:opacity .09s linear}.wave>img.on{opacity:1}
-.t.shown{opacity:1;transform:none}
+.t.shown{opacity:1}
 /* a new card arrives selected: brand-gradient outline that fades once its component has built */
 .t::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;opacity:0;
   background:linear-gradient(135deg,#0866FF,#A873FF 40%,#2ABBA7 70%,#F7B928);
@@ -79,9 +81,11 @@ img{display:block;user-select:none;-webkit-user-drag:none}
 /* brand assets */
 
 .app{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
-.apps{display:grid;grid-template-columns:repeat(2,56px);gap:10px}
-.apps img{width:56px;height:56px;border-radius:13px;transform:scale(0);opacity:0;transition:transform .45s var(--spring),opacity .3s}
-.apps img.on{transform:none;opacity:1}
+.apps{display:grid;grid-template-columns:repeat(2,64px);gap:6px}
+.apps img{width:64px;height:64px;border-radius:15px;box-shadow:0 6px 16px rgba(0,0,0,.45);transform:scale(0) rotate(var(--rot));opacity:0;transition:transform .45s var(--spring),opacity .3s}
+.apps img:nth-child(1){--rot:-7deg;translate:4px 3px}.apps img:nth-child(2){--rot:6deg;translate:-3px 0}
+.apps img:nth-child(3){--rot:5deg;translate:5px -2px}.apps img:nth-child(4){--rot:-5deg;translate:-2px -4px}
+.apps img.on{transform:scale(1) rotate(var(--rot));opacity:1}
 .bvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .fb{width:96px;height:96px}
 
@@ -119,12 +123,17 @@ img{display:block;user-select:none;-webkit-user-drag:none}
  13 Incoming boxes are transparent dark frames. Nothing populates until the box is fully in frame.
  14 The voice waveform lives only inside the blue Messenger pill and moves low to high like a voice. No separate waveform card.
  15 No expressive-icon size ladder.
+ 16 No hairlines: tiles have no borders and never scale, so no edge line can render.
+ 17 Videos stay as small as their tile allows so they read sharp.
+ 18 Every count is unique and arbitrary; every chart bar matches the number it shows.
+ 19 App icons huddle in Eduardo's 2x2 cluster, each a little tilted.
+ 20 The full facebook wordmark sits static on a big white panel inside a grey tile.
 */
 const stage=document.getElementById('stage'),track=document.getElementById('track');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let VW=innerWidth,VH=innerHeight;
 const place0=()=>{VW=innerWidth;VH=innerHeight;track.style.top=Math.round((VH-1016)/2)+'px'};addEventListener('resize',place0);place0();
-const META={"cmt-1":[375,137],"cmt-2":[375,137],"cmt-3":[375,137],"cmtm-att":[375,237],"cmtm-reply":[375,130],"cmtc-ok":[375,130],"cmtc-err":[375,105],"thr-c":[375,137],"thr-e":[375,657],"abar":[375,24],"fp-1":[377,44],"fp-2":[377,44],"fp-3":[377,44],"sb-1":[67,16],"sb-2":[72,16],"sb-3":[80,16],"csb-1":[58,16],"csb-2":[58,16],"csb-3":[56,16],"ssb-1":[56,16],"ssb-2":[65,16],"ssb-3":[62,16],"ex-100":[100,100],"ex-60":[60,60],"ex-40":[40,40],"ex-32":[32,32],"ex-24":[24,24],"ex-20":[20,20],"ex-16":[16,16],"note-bl":[175,81],"note-br":[175,81],"note-tl":[175,81],"note-tr":[175,81],"chat-o":[375,55],"chat-y":[375,55],"bling-d":[375,36],"bling-p":[375,36],"ring-i":[32,32],"ring-d":[32,32],"pbar":[375,20],"ctx-4":[383,158],"ntf-u":[375,96],"ntf-r":[375,96],"pbc-1":[375,35],"pbc-2":[375,58],"pbc-3":[375,81],"pbc-4":[375,104],"pbc-5":[375,127],"pbs-5":[375,127],"donut-h":[375,91],"bar-v":[375,248],"bar-h":[375,210],"cmp-d":[375,60],"cmp-a":[375,56],"cmp-t":[375,56],"cmpl-d":[375,64],"cmpl-a":[375,56],"cmpl-t":[375,56],"card-e":[375,120],"card-d":[375,120],"sw-off":[51,31],"sw-on":[51,31],"chip-d":[98,36],"chip-s":[122,36],"chipm-d":[86,36],"chipm-s":[112,36],"tray-st":[402,436],"tray-cr":[402,336],"star-0":[177,59],"star-1":[177,59],"star-2":[177,59],"star-3":[177,59],"star-4":[177,59],"star-5":[177,59],"star-6":[177,59],"star-7":[177,59],"star-8":[177,59],"star-9":[177,59],"rate-0":[375,110],"rate-1":[375,110],"rate-2":[375,110],"rate-3":[375,110],"rate-4":[375,110],"rate-5":[375,110],"tab-1":[375,44],"tab-2":[375,44],"tab-3":[375,44],"tab-4":[375,44],"tab-5":[375,44],"dots-1":[62,24],"dots-2":[62,24],"dots-3":[62,24],"dots-4":[62,24],"dots-5":[62,24],"ufi-only":[43,20],"ufi-count":[43,20],"ufi-liked":[43,20],"ufi-love":[43,20],"ufi-care":[43,20],"ufi-haha":[43,20],"ufi-wow":[43,20],"ufi-sad":[43,20],"ufi-angry":[43,20],"wave-quiet":[308,39],"wave-speech":[308,39],"wave-loud":[308,39],"app-cursor":[160,160],"app-xcode":[160,160],"bar-v-tip":[375,291],"app-simulator":[160,160],"app-terminal":[160,160],"app-claude":[160,160],"bar-h-tip":[375,215],"app-figma":[160,160],"app-testflight":[160,160],"wbar-quiet":[226,23],"wbar-speech":[226,23],"wbar-loud":[226,23]};
+const META={"cmt-1":[375,137],"cmt-2":[375,137],"cmt-3":[375,137],"cmtm-att":[375,237],"cmtm-reply":[375,130],"cmtc-ok":[375,130],"cmtc-err":[375,107],"thr-c":[375,137],"thr-e":[375,657],"abar":[375,24],"fp-1":[377,44],"fp-2":[377,44],"fp-3":[377,44],"sb-1":[67,16],"sb-2":[72,16],"sb-3":[80,16],"csb-1":[58,16],"csb-2":[58,16],"csb-3":[56,16],"ssb-1":[56,16],"ssb-2":[65,16],"ssb-3":[62,16],"ex-100":[100,100],"ex-60":[60,60],"ex-40":[40,40],"ex-32":[32,32],"ex-24":[24,24],"ex-20":[20,20],"ex-16":[16,16],"note-bl":[175,81],"note-br":[175,81],"note-tl":[175,81],"note-tr":[175,81],"chat-o":[375,55],"chat-y":[375,55],"bling-d":[375,36],"bling-p":[375,36],"ring-i":[32,32],"ring-d":[32,32],"pbar":[375,20],"ctx-4":[383,158],"ntf-u":[375,96],"ntf-r":[375,96],"pbc-1":[375,35],"pbc-2":[375,58],"pbc-3":[375,81],"pbc-4":[375,104],"pbc-5":[375,127],"pbs-5":[375,127],"donut-h":[375,91],"bar-v":[375,248],"bar-h":[375,210],"cmp-d":[375,60],"cmp-a":[375,56],"cmp-t":[375,56],"cmpl-d":[375,64],"cmpl-a":[375,56],"cmpl-t":[375,56],"card-e":[375,120],"card-d":[375,120],"sw-off":[51,31],"sw-on":[51,31],"chip-d":[98,36],"chip-s":[122,36],"chipm-d":[86,36],"chipm-s":[112,36],"tray-st":[402,436],"tray-cr":[402,336],"star-0":[177,59],"star-1":[177,59],"star-2":[177,59],"star-3":[177,59],"star-4":[177,59],"star-5":[177,59],"star-6":[177,59],"star-7":[177,59],"star-8":[177,59],"star-9":[177,59],"rate-0":[375,110],"rate-1":[375,110],"rate-2":[375,110],"rate-3":[375,110],"rate-4":[375,110],"rate-5":[375,110],"tab-1":[375,44],"tab-2":[375,44],"tab-3":[375,44],"tab-4":[375,44],"tab-5":[375,44],"dots-1":[62,24],"dots-2":[62,24],"dots-3":[62,24],"dots-4":[62,24],"dots-5":[62,24],"ufi-only":[43,20],"ufi-count":[43,20],"ufi-liked":[43,20],"ufi-love":[43,20],"ufi-care":[43,20],"ufi-haha":[43,20],"ufi-wow":[43,20],"ufi-sad":[43,20],"ufi-angry":[43,20],"wave-quiet":[308,39],"wave-speech":[308,39],"wave-loud":[308,39],"app-cursor":[160,160],"app-xcode":[160,160],"bar-v-tip":[375,248],"app-simulator":[160,160],"app-terminal":[160,160],"app-claude":[160,160],"bar-h-tip":[375,215],"app-figma":[160,160],"app-testflight":[160,160],"wbar-quiet":[226,23],"wbar-speech":[226,23],"wbar-loud":[226,23],"cmt-c":[375,137],"fb-wordmark":[240,43],"cmt-e":[375,657]};
 const B=n=>'bp/'+n+'.png';
 const U=128,G=20,ROWS=7;
 const px=n=>n*U+(n-1)*G;
@@ -133,6 +142,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 /* ---------- pool ---------- */
 const POOL=[
  {k:'fb-logo',w:2,h:2,type:'fb'},
+ {k:'fb-wordmark',w:3,h:2,theme:'light big',type:'cycle',f:['fb-wordmark'],ms:1e9},
  {k:'comment-stack',w:3,h:4,theme:'light',type:'stack',f:['cmt-1','cmt-2','cmt-3'],gap:0,ms:900},
  {k:'my-stack',w:2,h:2,type:'apps',src:['bp/app-claude.png','bp/app-figma.png','bp/app-cursor.png','bp/app-xcode.png']},
  {k:'ufi-reaction',w:1,h:1,theme:'light',type:'cycle',f:['ufi-only','ufi-count','ufi-liked','ufi-love','ufi-care','ufi-haha','ufi-wow','ufi-sad','ufi-angry'],ms:650,hot:[21,10]},
@@ -147,7 +157,7 @@ const POOL=[
  {k:'notification',w:3,h:2,theme:'light',type:'cycle',f:['ntf-u','ntf-r'],ms:1800,hot:[187,48]},
  {k:'progress-chart',w:3,h:2,theme:'light',type:'bands',f:'pbc-5',bands:[[0,0,375,25,'l'],[0,25,375,25,'l'],[0,50,375,26,'l'],[0,76,375,25,'l'],[0,101,375,26,'l']]},
  {k:'love',w:1,h:1,type:'brand',src:'../img/fb/love.webp',size:80,pop:1},
- {k:'brand-clip-1',w:3,h:3,type:'video',src:'clips/brand-1.mp4',cw:424,ch:424},
+ {k:'brand-clip-1',w:2,h:2,type:'video',src:'clips/brand-1.mp4',cw:276,ch:276},
  {k:'note-bubble',w:2,h:1,theme:'light',type:'cycle',f:['note-bl','note-br','note-tr','note-tl'],ms:900},
  {k:'keyboard',w:4,h:4,theme:'light',type:'clip',src:'clips/keyboard.mp4',cw:444,ch:440,hotT:0.85,hot:[300,363]},
  {k:'facepile',w:3,h:1,theme:'light',type:'cycle',f:['fp-1','fp-2','fp-3'],ms:900},
@@ -161,7 +171,7 @@ const POOL=[
  {k:'contextual-message',w:4,h:2,theme:'light',type:'toast',f:['ctx-4'],ms:2400},
  {k:'tab-bar',w:3,h:1,theme:'light pill',type:'cycle',f:['tab-1','tab-2','tab-3','tab-4','tab-5'],ms:1000,hotTabs:5},
  {k:'wow',w:1,h:1,type:'brand',src:'../img/fb/wow.webp',size:96,pop:1},
- {k:'brand-clip-2',w:4,h:2,type:'video',src:'clips/brand-2.mp4',cw:572,ch:276},
+ {k:'brand-clip-2',w:2,h:1,type:'video',src:'clips/brand-2.mp4',cw:276,ch:128},
  {k:'creator-badges',w:2,h:1,theme:'light',type:'stack',f:['csb-1','csb-2','csb-3'],gap:8,ms:500},
  {k:'star-display',w:2,h:1,theme:'light',type:'cycle',f:['star-0','star-1','star-2','star-3','star-4','star-5','star-6','star-7','star-8','star-9'],ms:240,hold:1},
  {k:'app-testflight',w:1,h:1,type:'app',src:'bp/app-testflight.png'},
@@ -178,7 +188,7 @@ const POOL=[
  {k:'app-simulator',w:1,h:1,type:'app',src:'bp/app-simulator.png'},
  {k:'croc',w:2,h:2,type:'brand',src:'../img/fb/croc-anim.webp',size:170},
  {k:'donut-header',w:3,h:1,theme:'light',type:'bands',f:'donut-h',bands:[[0,0,375,30,'f'],[0,30,375,30,'f'],[0,60,375,31,'f']]},
- {k:'brand-clip-3',w:2,h:2,type:'video',src:'clips/brand-3.mp4',cw:276,ch:276},
+ {k:'brand-clip-3',w:1,h:1,type:'video',src:'clips/brand-3.mp4',cw:128,ch:128},
  {k:'tray-stickers',w:4,h:4,theme:'light',type:'tray',f:['tray-st'],ms:3200},
  {k:'rating-input',w:3,h:2,theme:'light',type:'cycle',f:['rate-0','rate-1','rate-2','rate-3','rate-4','rate-5'],ms:420,hold:1},
  {k:'chips',w:2,h:1,theme:'light',type:'cycle',f:['chip-d','chip-s'],ms:1400,hot:[43,18]},
@@ -257,7 +267,7 @@ function show(it,fresh){make(it);it.state=1;it.fresh=fresh;requestAnimationFrame
 // start populated: everything already on screen is there from the first frame
 ensure(VW+600);while(head<items.length&&items[head].x<VW){const it=items[head++];live.push(it);show(it,false);}
 function frame(t){const dt=Math.min(.25,(t-last)/1000);last=t;if(!reduce)x-=SPEED*dt;
-  track.style.transform=`translate3d(${x.toFixed(2)}px,0,0)`;
+  {const d=devicePixelRatio||1;track.style.transform=`translate3d(${Math.round(x*d)/d}px,0,0)`;}
   const right=-x+VW;ensure(right+600);
   while(head<items.length&&items[head].x<right+40){const it=items[head++];it.appearAt=rnd(30,200);it.state=0;live.push(it);}
   for(let i=live.length-1;i>=0;i--){const it=live[i];const sx=it.x+x;
