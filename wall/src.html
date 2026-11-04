@@ -21,14 +21,20 @@ img{display:block;user-select:none;-webkit-user-drag:none}
 #track{position:absolute;left:0;top:32px;height:1016px;will-change:transform}
 
 /* card frame: appears on the right as an empty box, then its component builds in */
-.t{position:absolute;border-radius:var(--r);background:var(--tile);border:1px solid var(--tile-line);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.22);
-  opacity:0;transform:scale(.96);transition:opacity .5s var(--out-bold),transform .5s var(--out-bold)}
-.t.light{background:var(--tile)}
+.t{position:absolute;border-radius:var(--r);background:rgba(36,35,42,.32);border:1px solid rgba(255,255,255,.07);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0);
+  opacity:0;transform:scale(.96);transition:opacity .5s var(--out-bold),transform .5s var(--out-bold),box-shadow .5s var(--out-bold)}
+/* incoming boxes are transparent dark frames; they fill and build only once fully in frame */
+.t>.fill{position:absolute;inset:0;border-radius:inherit;background:var(--tile);opacity:0;transition:opacity .5s var(--out-bold)}
+.t.filled>.fill{opacity:1}.t.filled{box-shadow:0 10px 30px rgba(0,0,0,.22)}
 /* light components sit on an inner white panel inside the dark tile (Eduardo's nested containers) */
-.panel{background:#fff;border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
-.t.blue{background:var(--blue);border-color:transparent}
-.t.media{background:#000 center/cover}
-.t.media::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.55))}
+.panel{background:#fff;border-radius:14px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.t.pill .panel{border-radius:999px;padding:6px 14px}
+.t.blue>.fill{background:var(--blue)}
+.t.media>.fill{background:#000 center/cover}
+.t.media>.fill::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.55))}
+/* voice: her waveform lives only inside the blue Messenger pill */
+.wave{position:absolute;left:109px;top:36px;width:226px;height:23px;background:#0C5CFF;opacity:0;transition:opacity .15s}
+.wave.on{opacity:1}.wave>img{position:absolute;left:0;top:0;opacity:0;transition:opacity .09s linear}.wave>img.on{opacity:1}
 .t.shown{opacity:1;transform:none}
 /* a new card arrives selected: brand-gradient outline that fades once its component has built */
 .t::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;opacity:0;
@@ -108,6 +114,11 @@ img{display:block;user-select:none;-webkit-user-drag:none}
  8  Enter on out.bold, leave on in.practical, move on inout.bold, spring only for people (cursors) and reactions.
  9  Figma cursors (Julie, Adam, Eduardo, Jeremy, Josh) come in from the nearest edge, press real controls (mic, switch, tabs, field), and leave the way they came.
  10 Micro moments stay short (under 6 s a loop) so the eye can wander.
+ 11 All copy is fake but relevant (Maya Chen, Leo Park, Sunrise Trail), set inside the real components.
+ 12 Bottom nav sits in a white pill on the dark tile: no labels, Home, Video, Groups, Marketplace, and Julie's avatar as Profile.
+ 13 Incoming boxes are transparent dark frames. Nothing populates until the box is fully in frame.
+ 14 The voice waveform lives only inside the blue Messenger pill and moves low to high like a voice. No separate waveform card.
+ 15 No expressive-icon size ladder.
 */
 const stage=document.getElementById('stage'),track=document.getElementById('track');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -127,13 +138,11 @@ const POOL=[
  {k:'ufi-reaction',w:1,h:1,theme:'light',type:'cycle',f:['ufi-only','ufi-count','ufi-liked','ufi-love','ufi-care','ufi-haha','ufi-wow','ufi-sad','ufi-angry'],ms:650,hot:[21,10]},
  {k:'bar-vertical',w:3,h:3,theme:'light',type:'bands',f:'bar-v',bands:[[0,0,375,62,'f'],[0,62,26,186,'f'],[26,62,70,186,'u'],[96,62,70,186,'u'],[166,62,72,186,'u'],[238,62,70,186,'u'],[308,62,67,186,'u']]},
  {k:'like',w:2,h:2,type:'brand',src:'../img/fb/like-anim.webp',size:90},
- {k:'waveform',w:3,h:1,type:'cycle',f:['wave-quiet','wave-speech','wave-loud','wave-speech'],ms:180},
- {k:'voice',w:4,h:1,theme:'light',type:'clip',src:'clips/voice.mp4',cw:444,ch:72,hotT:2.25,hot:[178,44]},
- {k:'signal-badge',w:2,h:1,theme:'light',type:'cycle',f:['sb-1','sb-2','sb-3'],ms:1100},
+ {k:'voice',w:4,h:1,theme:'light',type:'clip',src:'clips/voice2.mp4',cw:444,ch:72,hotT:2.25,hot:[178,44],wave:[2.8,7.3]},
+ {k:'signal-badge',w:2,h:1,theme:'light',type:'cycle',f:['sb-1','sb-3'],ms:1400},
  {k:'thread',w:3,h:5,theme:'light',type:'cycle',f:['thr-c','thr-e'],ms:2600,align:'top'},
  {k:'switch',w:1,h:1,theme:'light',type:'cycle',f:['sw-off','sw-on'],ms:1400,hot:[25,15]},
  {k:'comment-media',w:3,h:3,theme:'media',bg:'img/media-4.webp',type:'stack',f:['cmtm-att','cmtm-reply'],gap:6,ms:1200},
- {k:'expressive',w:5,h:1,type:'row',f:['ex-16','ex-20','ex-24','ex-32','ex-40','ex-60','ex-100'],ms:140},
  {k:'care',w:2,h:2,type:'brand',src:'../img/fb/care-anim.webp',size:90},
  {k:'notification',w:3,h:2,theme:'light',type:'cycle',f:['ntf-u','ntf-r'],ms:1800,hot:[187,48]},
  {k:'progress-chart',w:3,h:2,theme:'light',type:'bands',f:'pbc-5',bands:[[0,0,375,25,'l'],[0,25,375,25,'l'],[0,50,375,26,'l'],[0,76,375,25,'l'],[0,101,375,26,'l']]},
@@ -149,8 +158,8 @@ const POOL=[
  {k:'comment-color',w:3,h:2,theme:'blue',type:'cycle',f:['cmtc-ok','cmtc-err'],ms:1800},
  {k:'bar-horizontal',w:3,h:2,theme:'light',type:'bands',f:'bar-h',bands:[[0,0,375,92,'f'],[0,92,375,40,'l'],[0,132,375,39,'l'],[0,171,375,39,'l']]},
  {k:'star',w:2,h:2,type:'brand',src:'../img/fb/star-anim.webp',size:120},
- {k:'contextual-message',w:3,h:2,theme:'light',type:'toast',f:['ctx-4'],ms:2400},
- {k:'tab-bar',w:3,h:1,theme:'light',type:'cycle',f:['tab-1','tab-2','tab-3','tab-4','tab-5'],ms:1000,hotTabs:5},
+ {k:'contextual-message',w:4,h:2,theme:'light',type:'toast',f:['ctx-4'],ms:2400},
+ {k:'tab-bar',w:3,h:1,theme:'light pill',type:'cycle',f:['tab-1','tab-2','tab-3','tab-4','tab-5'],ms:1000,hotTabs:5},
  {k:'wow',w:1,h:1,type:'brand',src:'../img/fb/wow.webp',size:96,pop:1},
  {k:'brand-clip-2',w:4,h:2,type:'video',src:'clips/brand-2.mp4',cw:572,ch:276},
  {k:'creator-badges',w:2,h:1,theme:'light',type:'stack',f:['csb-1','csb-2','csb-3'],gap:8,ms:500},
@@ -193,13 +202,15 @@ function ensure(maxX){while(!items.length||items[items.length-1].x<maxX){items.p
 const later=(it,ms,fn)=>it.timers.push(setTimeout(fn,ms));
 const img=(n)=>{const im=new Image();im.src=B(n);im.width=META[n][0];im.height=META[n][1];return im};
 function make(it){const s=it.spec,t=document.createElement('div');t.className='t'+(s.theme?' '+s.theme:'');
-  t.style.cssText=`left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px`;if(s.bg)t.style.backgroundImage=`url(${s.bg})`;
+  t.style.cssText=`left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px`;
+  const fl=document.createElement('div');fl.className='fill';if(s.bg)fl.style.backgroundImage=`url(${s.bg})`;t.appendChild(fl);
   const c=document.createElement('div');c.className='c';t.appendChild(c);let slot=null;
   if(s.type==='fb')c.innerHTML='<svg width="80" height="80" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#0866FF"/><path d="M36.4 64V39.6h7.3l1.1-8.5h-8.4v-5.4c0-2.5.7-4.1 4.2-4.1H45v-7.6c-.8-.1-3.4-.3-6.5-.3-6.4 0-10.8 3.9-10.8 11.1v6.3h-7.3v8.5h7.3V64z" fill="#fff"/></svg>';
   else if(s.type==='app')c.innerHTML=`<img class="app" src="${s.src}" alt="">`;
   else if(s.type==='brand')c.innerHTML=`<img src="${s.src}" width="${s.size}" height="${s.size}" alt="">`;
   else if(s.type==='video'||s.type==='clip'){slot=document.createElement('div');slot.className='slot';slot.style.width=s.cw+'px';slot.style.height=s.ch+'px';
-    slot.innerHTML=`<video class="clip" src="${s.src}" width="${s.cw}" height="${s.ch}" muted playsinline loop preload="auto"></video>`;c.appendChild(slot);}
+    slot.innerHTML=`<video class="clip" src="${s.src}" width="${s.cw}" height="${s.ch}" muted playsinline loop preload="auto"></video>`;c.appendChild(slot);
+    if(s.wave){const w=document.createElement('div');w.className='wave';['quiet','speech','loud'].forEach(n=>w.appendChild(img('wbar-'+n)));slot.appendChild(w);}}
   else if(s.type==='row'){slot=document.createElement('div');slot.className='row';s.f.forEach(n=>slot.appendChild(img(n)));c.appendChild(slot)}
   else if(s.type==='bands'){const [w,h]=META[s.f];slot=document.createElement('div');slot.className='slot';slot.style.width=w+'px';slot.style.height=h+'px';
     s.bands.forEach(([bx,by,bw,bh,d],i)=>{const b=document.createElement('div');b.className='band '+d;b.style.cssText=`left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;animation-delay:${(i*0.16).toFixed(2)}s`;
@@ -211,13 +222,18 @@ function make(it){const s=it.spec,t=document.createElement('div');t.className='t
     let y=0;s.f.forEach((n,i)=>{const im=img(n);if(s.type==='stack'){im.style.top=y+'px';y+=META[n][1]+(s.gap||0)}if(s.spin&&i===0)im.classList.add('r0');slot.appendChild(im)});
     c.appendChild(slot);if(s.align==='top'){c.style.placeItems='start center';c.style.paddingTop=Math.max(20,((it.h-Math.max(...hs))/2)|0)+'px'}}
   if(s.type==='apps'){slot=document.createElement('div');slot.className='apps';s.src.forEach(p=>{const im=new Image();im.src=p;slot.appendChild(im)});c.appendChild(slot)}
-  if(s.theme==='light'&&slot){const p=document.createElement('div');p.className='panel';slot.replaceWith(p);p.appendChild(slot);
-    if(s.align==='top'){c.style.placeItems='start center';c.style.paddingTop=Math.max(14,((it.h-28-slot.offsetHeight)/2)|0)+'px'}}
+  if(/light/.test(s.theme||'')&&slot){const p=document.createElement('div');p.className='panel';slot.replaceWith(p);p.appendChild(slot);
+    if(s.align==='top'){c.style.placeItems='start center';const ph=Math.max(...s.f.map(n=>META[n][1]))+24;c.style.paddingTop=Math.max(14,((it.h-ph)/2)|0)+'px'}}
   it.el=t;it.slot=slot;it.timers=[];track.appendChild(t);}
 
 /* ---------- card programs ---------- */
 function run(it){const s=it.spec,sl=it.slot;if(reduce){if(sl)[...sl.children].forEach(x=>x.classList.add('on'));return}
   const kids=sl?[...sl.children]:[];
+  if(s.wave){const w=sl.querySelector('.wave'),L=[...w.children];let j=0;
+    // voice level, low to high and back: quiet, speech, loud
+    const seq=[0,0,1,1,2,1,2,2,1,0,1,2,2,1,1,0,1,2,1,0];
+    const tick=()=>{const v=it.video,t=v?v.currentTime:0,on=t>=s.wave[0]&&t<=s.wave[1];w.classList.toggle('on',on);
+      if(on){const lv=seq[j++%seq.length];L.forEach((im,i)=>im.classList.toggle('on',i===lv))}later(it,150,tick)};later(it,100,tick);}
   if(s.type==='cycle'){it.i=0;kids[0].classList.add('on');
     it.next=()=>{clearTimeout(it.cy);kids[it.i].classList.remove('on');it.i=(it.i+1)%kids.length;kids[it.i].classList.add('on');
       const wait=(s.hold&&it.i===kids.length-1)?s.ms*6:s.ms;it.cy=setTimeout(it.next,wait);it.timers.push(it.cy)};
@@ -233,8 +249,11 @@ function stop(it){it.timers.forEach(clearTimeout);it.timers=[];if(it.video)it.vi
 
 /* ---------- glide: right to left at Eduardo's speed (0.06 screen heights a second) ---------- */
 const SPEED=64.8;let x=0,last=performance.now(),head=0;const live=[];
-function show(it,fresh){make(it);it.state=1;requestAnimationFrame(()=>{it.el.classList.add('shown');if(fresh)it.el.classList.add('fresh')});
-  later(it,fresh?rnd(500,900):rnd(0,500),()=>{it.el.classList.add('built');it.state=2;run(it);if(fresh)later(it,900,()=>it.el.classList.remove('fresh'))});}
+function build(it,ms,fresh){it.filling=true;later(it,ms,()=>{it.el.classList.add('filled');
+  later(it,fresh?380:0,()=>{it.el.classList.add('built');it.state=2;run(it);if(fresh)later(it,900,()=>it.el.classList.remove('fresh'))})})}
+// fresh boxes arrive as transparent dark frames; they wait until fully in frame, then fill and build
+function show(it,fresh){make(it);it.state=1;it.fresh=fresh;requestAnimationFrame(()=>{it.el.classList.add('shown');if(fresh)it.el.classList.add('fresh')});
+  if(!fresh)build(it,rnd(0,400),false);}
 // start populated: everything already on screen is there from the first frame
 ensure(VW+600);while(head<items.length&&items[head].x<VW){const it=items[head++];live.push(it);show(it,false);}
 function frame(t){const dt=Math.min(.25,(t-last)/1000);last=t;if(!reduce)x-=SPEED*dt;
@@ -243,6 +262,7 @@ function frame(t){const dt=Math.min(.25,(t-last)/1000);last=t;if(!reduce)x-=SPEE
   while(head<items.length&&items[head].x<right+40){const it=items[head++];it.appearAt=rnd(30,200);it.state=0;live.push(it);}
   for(let i=live.length-1;i>=0;i--){const it=live[i];const sx=it.x+x;
     if(it.state===0&&sx<VW-it.appearAt)show(it,true);
+    if(it.state===1&&it.fresh&&!it.filling&&sx+it.w<=VW-24)build(it,rnd(80,260),true);
     if(sx+it.w<-40){stop(it);it.el&&it.el.remove();live.splice(i,1);}}
   moveCursors(dt);requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
@@ -263,7 +283,7 @@ async function visit(){if(curs.filter(k=>k.busy).length>=2)return;const k=curs[w
   const vis=live.filter(it=>it.state===2&&it.x+x>220&&it.x+x+it.w<VW-260&&!it.claimed);if(!vis.length)return;
   const inter=vis.filter(it=>it.spec.hot||it.spec.hotTabs);const it=(inter.length&&Math.random()<.85?inter:vis)[Math.floor(Math.random()*(inter.length?inter.length:vis.length))]||vis[0];
   who++;k.busy=true;it.claimed=true;const s=it.spec;
-  let tx,ty;if(s.hotTabs){const nx=((it.i||0)+1)%s.hotTabs;[tx,ty]=hotPoint(it,375*(nx+.5)/s.hotTabs,32)}else if(s.hot){[tx,ty]=hotPoint(it,s.hot[0],s.hot[1])}else{const r=it.el.getBoundingClientRect();tx=r.left+r.width*rnd(.35,.65);ty=r.top+r.height*rnd(.35,.65)}
+  let tx,ty;if(s.hotTabs){const nx=((it.i||0)+1)%s.hotTabs;[tx,ty]=hotPoint(it,375*(nx+.5)/s.hotTabs,22)}else if(s.hot){[tx,ty]=hotPoint(it,s.hot[0],s.hot[1])}else{const r=it.el.getBoundingClientRect();tx=r.left+r.width*rnd(.35,.65);ty=r.top+r.height*rnd(.35,.65)}
   let lead=0;if(s.type==='clip'&&it.video){const d=it.video.duration||5;lead=((s.hotT-it.video.currentTime)%d+d)%d;if(lead<1.3)lead+=d;}
   const travel=1000,arrive=Math.max(0,lead*1000-travel-250);await wait(arrive);
   const m=Math.min(tx,VW-tx,ty,VH-ty);const edge=m===ty?'t':m===VH-ty?'b':m===tx?'l':'r';
