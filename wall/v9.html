@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Story Wall · Julie Torrisi-Coffey</title>
+<style>
+/* Story Wall v9 (dark). Rules: claude/Story-Wall_rules.md
+   6 rows. Each component sits in its grey tile with equal padding on all four sides.
+   One Blueprint component per screen. One cursor at a time. */
+:root{--wall:#1F1E21;--tile:#24232A;--card:#252728;--U:152px;--G:20px;
+  --out-bold:cubic-bezier(.2,.8,.2,1);--in-practical:cubic-bezier(.4,0,1,1);--inout-bold:cubic-bezier(.6,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+html,body{margin:0;height:100%;background:var(--wall);overflow:hidden}
+#stage{position:fixed;inset:0}
+#track{position:absolute;left:0;top:0;will-change:transform}
+.t{position:absolute;border-radius:22px;background:rgba(36,35,42,.45);opacity:0;transition:opacity .5s var(--out-bold),box-shadow .5s var(--out-bold);
+  display:grid;place-items:center;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black)}
+.t>.fill{position:absolute;inset:0;border-radius:inherit;background:var(--tile);opacity:0;transition:opacity .5s var(--out-bold)}
+.t.shown{opacity:1}.t.filled>.fill{opacity:1}.t.filled{box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.t::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+  background:linear-gradient(120deg,#0866FF,#8A3FFC 40%,#FF4D8D 70%,#FFB224);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .6s}
+.t.ghost::after{opacity:.9}
+.c{position:relative;z-index:1;display:block;opacity:0;clip-path:inset(0 0 100% 0);transition:opacity .4s var(--out-bold),clip-path .7s var(--out-bold)}
+.t.built .c{opacity:1;clip-path:inset(0 0 0 0)}
+.c img,.c video{display:block}
+.card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.shadow{border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.35);overflow:hidden}
+.pill{border-radius:999px;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.stack>*{opacity:0;transform:translateY(8px);transition:opacity .45s var(--out-bold),transform .45s var(--out-bold)}
+.stack>.on{opacity:1;transform:none}
+.swap{position:relative}.swap>*{transition:opacity .35s var(--out-bold)}.swap>.alt{position:absolute;inset:0;opacity:0}
+.swap.b>.alt{opacity:1}.swap.b>.base{opacity:0}
+.wm{background:#fff;border-radius:16px;padding:30px 67px;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.apps{display:grid;grid-template-columns:repeat(2,40px);gap:4px}.apps img{width:40px;height:40px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.45)}
+.apps img:nth-child(1){transform:translate(3px,2px) rotate(-7deg)}.apps img:nth-child(2){transform:translate(-2px,0) rotate(6deg)}.apps img:nth-child(3){transform:translate(3px,-1px) rotate(5deg)}.apps img:nth-child(4){transform:translate(-1px,-3px) rotate(-5deg)}
+.mo{display:grid;grid-template-columns:70px 86px 1fr;grid-template-rows:70px 84px 1fr;gap:8px;width:360px;height:252px}
+.mo>div{border-radius:12px;overflow:hidden;display:grid;place-items:center;position:relative}
+.m1{background:#0A0A0A;grid-row:1;grid-column:1}.m2{background:#0866FF;grid-row:1;grid-column:2}.m3{background:#F0F2F5;grid-row:1/3;grid-column:3}
+.m4{grid-column:1/3;grid-row:2/4;background:#0866FF;background-image:radial-gradient(rgba(255,255,255,.35) 1.4px,transparent 1.6px);background-size:16px 16px}
+.m5{grid-column:3;grid-row:3;background:#0866FF}
+.mo .wmx{position:absolute;left:-6px;top:50%;transform:translateY(-46%);width:820px;height:147px;filter:brightness(0) invert(1)}
+.pop{position:absolute;pointer-events:none;width:44px;height:44px;opacity:0}
+.pop.go{animation:pop 1.1s var(--spring) forwards}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,0) scale(.3)}25%{opacity:1;transform:translate(-50%,-26px) scale(1.15)}70%{opacity:1;transform:translate(-50%,-34px) scale(1)}100%{opacity:0;transform:translate(-50%,-44px) scale(.9)}}
+.press{transition:transform .14s}.press.down{transform:scale(.94)}
+.wave{position:absolute;left:109px;top:36px;width:226px;height:23px;background:#0C5CFF;opacity:0;transition:opacity .15s}
+.wave.on{opacity:1}.wave>img{position:absolute;left:0;top:0;opacity:0;transition:opacity .09s linear}.wave>img.on{opacity:1}
+/* cursors: twice the old size, one at a time */
+.cur{position:fixed;left:0;top:0;z-index:50;pointer-events:none;will-change:transform}
+.cur svg{width:34px;height:34px;display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));transition:transform .14s}
+.cur.press svg{transform:scale(.82)}
+.cur b{position:absolute;left:26px;top:28px;font:600 22px/1 -apple-system,"SF Pro",system-ui,sans-serif;color:#fff;padding:8px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.cur i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:3px solid var(--cc);opacity:0}
+.cur i.go{animation:ring .5s var(--out-bold)}@keyframes ring{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(1.8)}}
+</style></head><body><div id="stage"><div id="track"></div></div>
+<script>
+const SPEED=64.8,U=152,G=20,ROWS=6,MINPAD=24;
+const V='v9/',BP='bp/',FB='../img/fb/';
+const img=(s,w,h,cls='')=>`<img class="${cls}" src="${s}" width="${w}" height="${h}" alt="">`;
+const fbSvg=s=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#0866FF"/><path d="M36.4 64V39.6h7.3l1.1-8.5h-8.4v-5.4c0-2.5.7-4.1 4.2-4.1H45v-7.6c-.8-.1-3.4-.3-6.5-.3-6.4 0-10.8 3.9-10.8 11.1v6.3h-7.3v8.5h7.3V64z" fill="#fff"/></svg>`;
+const fbW=s=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#fff"/><path d="M36.4 64V39.6h7.3l1.1-8.5h-8.4v-5.4c0-2.5.7-4.1 4.2-4.1H45v-7.6c-.8-.1-3.4-.3-6.5-.3-6.4 0-10.8 3.9-10.8 11.1v6.3h-7.3v8.5h7.3V64z" fill="#0866FF"/></svg>`;
+const vid=(s,w,h,extra='')=>`<div style="position:relative;width:${w}px;height:${h}px" class="shadow"><video src="${s}" width="${w}" height="${h}" style="object-fit:cover;width:${w}px;height:${h}px" muted playsinline loop preload="auto"></video>${extra}</div>`;
+
+/* content: key -> [html, w, h, component set (for the one-component-per-screen check)] */
+const C={
+ thread:[`<div class="stack shadow" style="background:#252728">${[1,2,3,4].map(i=>img(V+'r'+i+'.png',375,[82,254,102,82][i-1])).join('')}</div>`,375,520,'Comment'],
+ barv:[img(V+'bar-v.png',375,248,'shadow'),375,248,'Bar chart'],
+ pbs:[img(V+'pbs-5.png',375,139,'shadow'),375,139,'Progress Bar Chart'],
+ donut:[img(V+'donut-h.png',375,91,'shadow'),375,91,'Donut Chart Header'],
+ bling:[img(V+'bling-d.png',375,36,'shadow'),375,36,'Bling Bar'],
+ pill:[`<div class="swap pill" data-act="pill">${img(V+'pill-home.png',376,60,'base')}${img(V+'pill-market.png',376,60,'alt')}</div>`,376,60,'Tab bar (pill)'],
+ chat:[`<div class="stack" style="display:flex;flex-direction:column;gap:8px;width:375px">${img(V+'chat-o.png',375,35)}${img(V+'chat-y.png',375,55)}</div>`,375,98,'Chat Bubble'],
+ cmp:[img(V+'cmp.png',375,56,'shadow'),375,56,'Composer'],
+ ntf:[img(V+'ntf.png',375,96,'shadow'),375,96,'Notification Cell'],
+ fp:[`<div class="card">${img(V+'fp.png',377,36)}</div>`,405,64,'Facepile'],
+ glim:[`<div class="swap glim" style="width:383px;height:165px" data-act="ctx"><div class="base" style="display:grid;place-items:center;height:165px">${img(V+'glim-ctx.png',375,102,'shadow')}</div><div class="alt press">${img(V+'ctx.png',383,165)}</div></div>`,383,165,'Contextual Message (+ its Glimmer)'],
+ star:[`<div class="card">${img(V+'star.png',177,59)}</div>`,205,87,'Star Rating Display'],
+ wm:[`<div class="wm">${img(BP+'fb-wordmark.png',240,43)}</div>`,374,103,'brand: wordmark'],
+ mosaic:[`<div class="mo"><div class="m1">${img(FB+'care-still.webp',50,50)}</div><div class="m2">${fbW(46)}</div><div class="m3">${img(FB+'like-still.webp',78,78)}</div><div class="m4">${img(FB+'rock-on-still.webp',110,110)}</div><div class="m5">${img(FB+'badge-chat.webp',72,72)}</div></div>`,360,252,'brand: bento in a bento'],
+ voice:[vid('clips/voice3.mp4',444,72,`<div class="wave">${['quiet','speech','loud'].map(n=>img(BP+'wbar-'+n+'.png',226,23)).join('')}</div>`),444,72,'Messenger voice (Julie prototype)'],
+ keys:[vid('clips/keyboard.mp4',444,440),444,440,'Keyboard (Julie prototype)'],
+ b1:[vid('clips/brand-1.mp4',252,252),252,252,'brand clip 1'],
+ b2:[vid('clips/brand-2.mp4',216,104),216,104,'brand clip 2'],
+ b3:[vid('clips/brand-3.mp4',104,104),104,104,'brand clip 3'],
+ sw:[`<div class="swap" style="width:58px;height:44px;display:grid;place-items:center" data-act="switch"><div class="base">${img(V+'switch-on.png',53,36)}</div><div class="alt" style="display:grid;place-items:center">${img(V+'switch-off.png',58,44)}</div></div>`,58,44,'.Switch'],
+ ring:[img(V+'ring.png',32,32),32,32,'Progress Ring'],
+ apps:[`<div class="apps">${['claude','figma','cursor','xcode'].map(a=>`<img src="${BP}app-${a}.png" alt="">`).join('')}</div>`,84,84,'my stack'],
+ hex:[img(FB+'glyph-hexstar.webp',64,64),64,64,'glyph'],
+ uni:[img(FB+'unicorn-anim.webp',80,80),80,80,'sticker'],croc:[img(FB+'croc-anim.webp',80,80),80,80,'sticker'],
+ sta:[img(FB+'star-anim.webp',80,80),80,80,'sticker'],fire:[img(FB+'fire.webp',72,72),72,72,'sticker'],
+ wow:[img(FB+'wow.webp',72,72),72,72,'reaction'],love:[img(FB+'love.webp',72,72),72,72,'reaction'],
+ check:[img(FB+'badge-check.webp',64,64),64,64,'badge'],map:[img(FB+'map.webp',72,72),72,72,'sticker'],
+ market:[img(FB+'glyph-market.webp',64,64),64,64,'glyph'],aheart:[img(FB+'ava-heart.webp',80,80),80,80,'avatar sticker'],abuns:[img(FB+'ava-buns.webp',80,80),80,80,'avatar sticker'],
+};
+/* columns of the loop. An item is a key, or [a,b] for two small square tiles side by side. Rows per column add up to 6. */
+const COLS=[
+ ['thread',['sw','ring'],'pill'],
+ ['barv','ntf','chat','glim'],
+ ['mosaic','voice',['hex','sta'],'b2',['aheart','abuns']],
+ ['pbs','cmp','bling',['uni','croc'],'fp'],
+ ['b1',['apps','fire'],'star',['b3','check'],['map','market']],
+ ['keys','donut',['wow','love'],'wm'],
+];
+const rowsFor=h=>{let k=1;while(k*U+(k-1)*G<h+2*MINPAD)k++;return k};
+const tileH=k=>k*U+(k-1)*G;
+
+/* layout: absolute tiles inside each column */
+const VW=()=>innerWidth,VH=()=>innerHeight;
+const track=document.getElementById('track');
+const TOP=()=>Math.round((VH()-(ROWS*U+(ROWS-1)*G))/2);
+let cols=[],loopW=0;
+function buildLoop(){let x=0;
+ for(const col of COLS){const el=document.createElement('div');el.style.position='absolute';let y=0,w=0;const tiles=[];
+  for(const it of col){
+   if(Array.isArray(it)){let xx=0;for(const k of it){const t=makeTile(k,U,U);t.el.style.left=xx+'px';t.el.style.top=y+'px';el.appendChild(t.el);tiles.push(t);xx+=U+G}w=Math.max(w,xx-G);y+=U+G;continue}
+   const [,cw,ch]=C[it];const k=rowsFor(ch);const h=tileH(k);const pad=Math.round((h-ch)/2);const tw=cw+2*pad;
+   const t=makeTile(it,tw,h);t.el.style.left='0px';t.el.style.top=y+'px';el.appendChild(t.el);tiles.push(t);w=Math.max(w,tw);y+=h+G}
+  track.appendChild(el);cols.push({el,x,w,tiles});x+=w+G}
+ loopW=x;
+ /* make sure a component never meets its own copy on screen */
+ if(loopW<VW()+400)console.warn('loop shorter than screen: repeats possible',loopW);
+}
+function makeTile(k,w,h){const el=document.createElement('div');el.className='t';el.style.width=w+'px';el.style.height=h+'px';
+ el.innerHTML=`<div class="fill"></div><div class="c">${C[k][0]}</div>`;return {k,el,w,h,state:0}}
+
+/* lifecycle: 0 hidden, 1 ghost (transparent dark frame), 2 built */
+const timers=new WeakMap();
+const later=(t,ms,fn)=>{const id=setTimeout(fn,ms);(timers.get(t)||timers.set(t,[]).get(t)).push(id)};
+function reset(t){(timers.get(t)||[]).forEach(clearTimeout);timers.set(t,[]);t.state=0;t.el.className='t';
+ t.el.querySelectorAll('.on').forEach(e=>e.classList.remove('on'));t.el.querySelectorAll('.swap').forEach(e=>e.classList.remove('b'));
+ t.el.querySelectorAll('video').forEach(v=>{v.pause();v.currentTime=0})}
+function ghost(t){t.state=1;t.el.classList.add('shown','ghost')}
+function build(t,fast){t.state=2;const e=t.el;e.classList.add('shown','filled');if(fast)e.classList.remove('ghost');
+ later(t,fast?0:260,()=>{e.classList.add('built');
+  const st=e.querySelector('.stack');if(st)[...st.children].forEach((c,i)=>later(t,(fast?0:200)+i*220,()=>c.classList.add('on')));
+  e.querySelectorAll('video').forEach(v=>{v.currentTime=0;v.play().catch(()=>{})});
+  const g=e.querySelector('.glim');if(g)later(t,1800,()=>g.classList.add('b'));
+  const w=e.querySelector('.wave');if(w)wave(t,w);
+  if(!fast)later(t,900,()=>e.classList.remove('ghost'))})}
+function wave(t,w){const L=[...w.children],v=t.el.querySelector('video');const seq=[0,0,1,1,2,1,2,2,1,0,1,2,2,1,1,0,1,2,1,0];let j=0;
+ const tick=()=>{const tm=v?v.currentTime:0,on=tm>=2.4&&tm<=6.9;w.classList.toggle('on',on);if(on){const lv=seq[j++%seq.length];L.forEach((m,i)=>m.classList.toggle('on',i===lv))}later(t,150,tick)};tick()}
+
+/* cursors: one at a time; enter from the nearest edge, do one real thing, leave the same way */
+const PEOPLE=[['Julie','#8A3FFC'],['Adam','#1DB954'],['Eduardo','#F0284A'],['Jeremy','#0B84FF'],['Josh','#F5A623']];
+const ACTS={
+ Julie:{find:'[data-act="switch"]',pt:[29,22],run:el=>el.classList.toggle('b')},
+ Adam:{find:'[data-act="pill"]',pt:[218,30],run:el=>el.classList.toggle('b')},
+ Eduardo:{find:'.wave',pt:[69,0],parent:true,before:true,run:el=>{const v=el.querySelector('video');if(v){v.currentTime=1.6;v.play().catch(()=>{})}}},
+ Jeremy:{find:'.glim.b',pt:[191,140],run:el=>{const p=el.querySelector('.press');p.classList.add('down');setTimeout(()=>p.classList.remove('down'),180)}},
+ Josh:{find:'.stack.shadow',pt:[124,66],run:el=>{const p=document.createElement('img');p.src=FB+'love.webp';p.className='pop';p.style.left='124px';p.style.top='44px';el.appendChild(p);requestAnimationFrame(()=>p.classList.add('go'));setTimeout(()=>p.remove(),1300)}},
+};
+const svg=c=>`<svg viewBox="0 0 24 24"><path d="M3 2l17 9.2-7.4 1.9L9.6 20z" fill="${c}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+let curIdx=0,busy=false;
+function nextCursor(){if(busy)return;const [name,color]=PEOPLE[curIdx%PEOPLE.length];const a=ACTS[name];
+ let el=[...document.querySelectorAll(a.find)].map(e=>a.parent?e.parentElement:e).find(e=>{const t=e.closest('.t');if(!t||!t.classList.contains('built'))return false;const r=e.getBoundingClientRect();return r.left>120&&r.right<VW()-220&&r.top>60&&r.bottom<VH()-60});
+ if(!el){curIdx++;return}
+ busy=true;curIdx++;
+ const c=document.createElement('div');c.className='cur';c.style.setProperty('--cc',color);c.innerHTML=svg(color)+`<i></i><b style="background:${color}">${name}</b>`;document.body.appendChild(c);
+ const tgt=()=>{const r=el.getBoundingClientRect();return [r.left+a.pt[0],r.top+a.pt[1]]};
+ const [tx,ty]=tgt();const dl=tx,dr=VW()-tx,dt=ty,db=VH()-ty,m=Math.min(dl,dr,dt,db);
+ const edge=m===dl?[-160,ty]:m===dr?[VW()+60,ty]:m===dt?[tx,-120]:[tx,VH()+60];
+ const ease=t=>1-Math.pow(1-t,3),easeIn=t=>t*t*t;
+ const t0=performance.now(),IN=1100,HOLD=900,OUT=900;
+ function step(now){const e=now-t0;const [x,y]=tgt();let px,py;
+  if(e<IN){const k=ease(e/IN);px=edge[0]+(x-edge[0])*k;py=edge[1]+(y-edge[1])*k}
+  else if(e<IN+HOLD){px=x;py=y}
+  else{const k=easeIn(Math.min(1,(e-IN-HOLD)/OUT));px=x+(edge[0]-x)*k;py=y+(edge[1]-y)*k}
+  c.style.transform=`translate(${px}px,${py}px)`;
+  if(e>=IN&&!c.dataset.p){c.dataset.p=1;c.classList.add('press');c.querySelector('i').classList.add('go');a.run(a.parent?el:el);setTimeout(()=>c.classList.remove('press'),160)}
+  if(e<IN+HOLD+OUT)requestAnimationFrame(step);else{c.remove();setTimeout(()=>{busy=false},500)}}
+ requestAnimationFrame(step)}
+setInterval(nextCursor,400);
+
+/* motion */
+let x=0,last=performance.now();
+buildLoop();
+function place(){const top=TOP();for(const c of cols){c.el.style.transform=`translate(${c.x}px,${top}px)`}}
+place();
+/* start populated: everything already on screen is built */
+for(const c of cols)if(c.x<VW())for(const t of c.tiles){build(t,true)}
+function frame(now){const dt=Math.min(.25,(now-last)/1000);last=now;x+=SPEED*dt;
+ const d=devicePixelRatio||1;track.style.transform=`translate3d(${-Math.round(x*d)/d}px,0,0)`;
+ for(const c of cols){
+  if(c.x+c.w-x<-40){c.x+=loopW;c.el.style.transform=`translate(${c.x}px,${TOP()}px)`;c.tiles.forEach(reset)}
+  const sx=c.x-x;
+  for(const t of c.tiles){const tx=sx+parseFloat(t.el.style.left);
+   if(t.state===0&&tx<VW()-30)ghost(t);
+   if(t.state===1&&tx+t.w<=VW()-24)build(t,false)}}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+addEventListener('resize',place);
+/* 4a check: list each component set; warn if one appears twice in the loop */
+(()=>{const seen={};for(const col of COLS)for(const it of col)for(const k of [].concat(it)){const s=C[k][3];if(/sticker|reaction|badge|glyph|brand clip/.test(s))continue;seen[s]=(seen[s]||0)+1}
+ const dup=Object.entries(seen).filter(([,n])=>n>1);window.__components=seen;if(dup.length)console.warn('REPEATED COMPONENT',dup)})();
+</script></body></html>
