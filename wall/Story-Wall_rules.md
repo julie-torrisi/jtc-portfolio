@@ -1,9 +1,9 @@
 # Story Wall rules (Julie's bento motion wall)
 
 Every edit Julie asks for becomes a rule here. One file: this replaces Story-Wall_rules.md (v9) and Story-Wall_rules_1.md (Rovo analysis, 11/9).
-Source build: jtc-portfolio, branch `story-wall`, folder `/wall`. Current build: `v10.html` (dark, 11/9), assets in `v9/` + `v10/`, faces in `img/face-*.png`, clips in `clips/`. Previous: `v9.html`. Older template: `src.html`.
+Source build: jtc-portfolio, branch `story-wall`, folder `/wall`. Current build: `v11.html` (dark, 11/9 evening), assets in `v9/` + `v10/` + `v11/`, faces in `img/face-*.png`, clips in `clips/`. Previous: `v9.html`. Older template: `src.html`.
 References: Eduardo Sonnino's Story Factory wall, and his Rovo story wall (Team '26 Europe; Julie's capture `~/Downloads/_Video/rovo_story_wall.mov`, 8.1 s, 4096×2284, analyzed 11/9 at 8 fps). Julie's Rovo observations are marked J1–J11.
-Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in brand colors, no metric cards). v10 edits 11/9: rules 5, 6, 6g, 6h, 6i, 6k, 9b, 10.2, 10.3.
+Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in brand colors, no metric cards). v10 edits 11/9: rules 5, 6, 6g, 6h, 6i, 6k, 9b, 10.2, 10.3. v11 edits 11/9: 4b, 6m, 6n, 14, 14a, 14b.
 
 ## Content
 1. Only real pieces: Blueprint library components exported as-is (Figma file zsAGUQCLwwGQzlD2gvzSTt), Julie's own prototype captures (Xcode / Messenger recordings), official Facebook brand assets and her brand refresh animations. Never invent or redraw a pattern.
@@ -11,7 +11,7 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 3. Show as many comment-related components as possible, isolated, outside a phone screen.
 4. Never the same asset twice on screen, including photos inside components (the camera roll tray and the media comment must not share an image). Brand video shows as different micro clips, each used once.
 4a. ONE COMPONENT, ONCE ON SCREEN (hard rule, never break it). A component counts as the same visual no matter its variant, color, theme, surface (Default, On Color, On Media), data or copy. Two Progress Bar Charts (Primary and Star Rating), two Bar charts (vertical and horizontal), two Comment Threads, a comment plus a comment stack, a light and a dark copy: all repeats. Before showing any frame, list the Blueprint component set behind every tile and confirm each set appears once. Variants of one component may only appear as states of that one tile over time (cycling in place). One thread or one two-bubble chat counts as one tile.
-4b. Show a skeleton state: one tile loads with a Blueprint Glimmer (skeleton) component first, then resolves to its real content.
+4b. Show skeleton states from Blueprint's Communication page glimmer sets (Contextual Message_Glimmer, Context row_Glimmer): the tile loads with the glimmer pulsing, then resolves to its real component (11/9).
 5. App icons: one small tile each, icon small and centered (11/9, replaces the 2x2 cluster). Two sets of 4: Claude, Figma, Cursor, Xcode, then TestFlight, Simulator, Terminal, Slack (Slack icon still needed; its slot stays an empty tile). Icons are @2x exports shown at 80 px in a one-unit tile. Small tiles hold still once built (rule 13b); they pop in per rule 10.
 6. The keyboard card is Julie's north star: the Messenger composer with the keyboard already up from the first frame, the + menu (Files, Payment, Location, Games, AI media) opening and closing, cut from her Messenger composer recording at native 444 px, everything above the composer except the menu painted out to the chat white (11/9). The talk-to-text card uses the real Messenger pattern: tap the mic, the voice pill replaces the input field. The keyboard card is the real keyboard rising under the composer. Julie's Quiet, Speech and Loud waveform lives only inside the blue voice pill and moves low to high like a voice. No separate waveform card.
 6a. No placeholder copy anywhere ("Label", "Headline", "Body type input"). All copy is fake but relevant. Labels fit their column with no wrapping.
@@ -26,6 +26,8 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 6j. Include one bento-within-a-bento brand card: small brand tiles nested inside one grey tile, with no asset that also appears elsewhere on screen.
 6k. Comment rows match her light-mode reference, in dark mode: avatar, Name · time, text, optional rounded photo attachment, then Reply, one reaction + count, and the like icon on the right. No Author / Admin / Follow badge strip, no truncated text, no repeated name on every comment. Different people reply to each other. Thread lines are 1.5 px, and the thread line connects up to the first comment's avatar (11/9).
 6l. No logos of companies Julie is applying to (deck rule). Facebook brand assets from her own work (6f, 6h, 6j) are allowed.
+6m. Every chart style on Blueprint's Data page is on the wall, one tile per chart component, its styles taking turns in place every ~5 s (4a): Bar chart (vertical, horizontal), Progress Bar Chart (star rating, primary), Line chart (high up, medium down, low up), Donut Chart (2 points side, 3 points bottom). Each style builds per rule 10.3 every time it appears (11/9).
+6n. Reactions come from Blueprint (Content page, Responsive post sub components: the UFI footer and the UFI reaction button states). The reaction dock follows Julie's prototype (FDSReactionBar.swift, dark tokens) with her prototype's reaction art (11/9).
 
 ## Scale
 7. Nothing scales. Components render at native pixel size. The page never zooms to fit the window.
@@ -57,7 +59,9 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 13a. Some cards stay still after they build.
 13b. Small single-icon tiles always hold still once built (J10). That stillness makes the moving tiles readable.
 13c. Hanging card (J5): a card with a handle bar hangs from a hook and swings once on entry. Spring, pivot top center, about ±3°, settling in about 1.6 s (unchecked at 8 fps).
-14. Figma cursors (Julie, Adam, Eduardo, Jeremy, Josh): ONE at a time, never two on screen. Large pointers with a colored name pill (22 px semibold label, 34 px pointer). Each enters from the nearest edge, presses one real control (switch, pill tab, mic, pinned message button, a reaction on a comment; the component steps to its next variant, or a tile builds in), holds a beat and leaves the way it came. A cursor never crosses the whole screen. The next starts only after the last is gone.
+14. Figma cursors (Julie, Adam, Eduardo, Jeremy, Josh): ONE at a time, never two on screen. Each person acts once per tile entry (no double taps), and every tap lands on the control itself.
+14a. Every press shows Blueprint's Pressed State (Actions page): Non Media Pressed on Dark (white 30%) over the control, buttons also scale to .97 for 100 ms (FDSButton). Jeremy taps View once.
+14b. Eduardo selects a reaction, as in Julie's prototype: press and hold Like (pressed state), the dock opens after 350 ms, he slides across Like, Love, Care to Haha (each grows to 80 with its name), releases, and Like becomes Haha with the count 1,248 → 1,249 (11/9). Large pointers with a colored name pill (22 px semibold label, 34 px pointer). Each enters from the nearest edge, presses one real control (switch, pill tab, mic, pinned message button, a reaction on a comment; the component steps to its next variant, or a tile builds in), holds a beat and leaves the way it came. A cursor never crosses the whole screen. The next starts only after the last is gone.
 
 ## Process
 15. Export each component from Figma at native size in DEFAULT / DARK mode (Blueprint - Color collection). For copy, numbers and faces, use a temporary page of instances: swap fonts to SF Pro, set text, set Actor image fills, export. Detach only when a bar must be resized. Delete the temp page "_Story Wall export v8 (temp, delete me)" when the wall is final.
@@ -80,4 +84,5 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 - [SYSTEM GAP] Missing: --ck-motion-duration-glow and the count-up tokens · Needed for: rule 10 · Proposed: values in count-up-rule.md · Fallback: duration.cinematic + easing.enter · Proceed with proposed or fallback?
 - v10 is on 7 × 128 (done 11/9).
 - Open: the keyboard and talk-to-text cards are both the Messenger composer. With a 3,256 px loop they can share a 1920 screen near the loop seam, and so can the static wordmark and the facebook brand tile. Keep, or merge talk-to-text into the keyboard tile as a state?
+- Figma temp page holds the v11 dark exports (dk3-*); delete with the page when the wall is final.
 - Missing: a Blueprint card with a handle bar for the hanging card (13c); the Slack icon (5); Julie's photos + camera roll tray export (6g).
