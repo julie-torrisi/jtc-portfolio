@@ -91,6 +91,21 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 24. Creator reaction: the creator's avatar with their reaction sits on the reaction row. Facepile: avatars + reaction + count, with the count on either side.
 25. UFI bento: the original laugh-burst phone stays in the center as is. One animation per recording.
 
+## v15 edits (11/11)
+15a. No box is ever empty. Every cell holds a real piece: a component, a Blueprint glimmer, one of Julie's landscapes, an icon, a sticker or an app icon. The page reports window.__emptyTiles and window.__open; both must be 0.
+15b. Use a Blueprint glimmer wherever the component has one: glimmer first, then the component resolves in place. Some boxes show only the glimmer, pulsing on a loop (Contextual Message, Action cell, Button Group, Text Pairing, Facepile stack, Profile photo, switch and icon button add-ons). A glimmer shows as soon as its box slides in; a chart waiting its turn shows its empty state and header glimmer.
+15c. Photos are Julie's own June and July trip landscapes only: no people. Each picture is used in one size only (2×2 or 1×1). The Media Tile shows two of them (Coastline, Lake day) with true labels.
+15d. The hanging post's meta ("2h · globe") sits to the right of the name, never on its own line.
+15e. Eduardo opens the reaction dock and picks Love (heart), not Haha. The footer then shows Love.
+15f. Julie's cursor turns the switch ON (it starts off).
+15g. A cursor never glitches on a tap: the card shows behind a pressed button as it shrinks, and a cursor leaves straight out the way it came from where it is now.
+15h. Time in comments: the bars fill one after another, and each bar's number counts up with its bar.
+15i. The send icon is Blueprint's paper plane (filled, blue). It replaces the thumbs-up in the composer everywhere (keyboard composer, voice row). One tile shows the outline icon filling in; one tile shows the filled icon at 12, 16 and 24.
+15j. The comment thread has no line under Sam Whitfield.
+15k. The brand bento (care, f logo, rock-on, like, "fa" crop) is back in place of the chat bubbles. It stays a full screen from the bento-in-a-bento both ways round, since they share stills. The chat-with-star badge in the bento-in-a-bento is 96 px.
+15l. App icons sit together in small containers of four (Claude, Figma, Cursor, Xcode; TestFlight, Simulator, Terminal, Slack).
+15m. Small pieces appear twice, at least a screen apart (paired by loop position); sw, ring and a few stickers appear once.
+
 ## Gaps
 - [SYSTEM GAP] Missing: a warm glow token · Needed for: the rare amber glow (rule 10.2) · Proposed: --ck-glow-warm #FFB224, used on about one glow in nine · Fallback: blue → lilac → mist only · Proceed with proposed or fallback?
 - [SYSTEM GAP] Missing: non-blue data-viz tiers in Blueprint · Needed for: chart colors (6m-1) · Proposed: Notification Circle colors at 100/55/25 % · Fallback: blue only · Proceed with proposed or fallback?
@@ -98,4 +113,5 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 - v10 is on 7 × 128 (done 11/9).
 - Done v12: keyboard ↔ voice and word ↔ wordmark are kept at least 2,036 px apart both ways on a 5,152 px loop (decided 11/9: separate).
 - Figma temp page holds the v11 and v12 dark exports (dk3-*, dk4-*, v12-chart-sheet, v12-comp-sheet); delete with the page when the wall is final, after Julie's go.
+- [SYSTEM GAP] Missing: a thumbs-down (dislike) icon without the cuff · Needed for: the right-hand icon on each comment in the thread (rule 17; the export still shows the outline thumbs-up with a cuff) · Not found in Blueprint or Comments-Wall · Please send the icon or its Figma link.
 - Missing: Julie's new dark keyboard recording (6); Julie's photos + camera roll tray export (6g).
