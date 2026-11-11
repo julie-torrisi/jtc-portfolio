@@ -109,6 +109,10 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 ## v16 edit (11/11)
 16a. Every comment's action row ends with Blueprint's Comment action bar icons: the outline Like, then the thumbs-down "dislike" with no cuff, right-aligned (Blueprint › Content › Comment action bar, 2007:177322). Exported in dark mode, never redrawn.
 
+## Published
+- 11/11, with Julie's go: v16 runs as a full-bleed slide before "What I bring" in the DX deck (julie-torrisi/dx-portfolio, /story-wall, self-contained copy). On screens under 1280 px the whole wall shrinks as one picture so its tiles still build. Re-copy from this branch when the wall changes.
+
+## Gaps
 - [SYSTEM GAP] Missing: a warm glow token · Needed for: the rare amber glow (rule 10.2) · Proposed: --ck-glow-warm #FFB224, used on about one glow in nine · Fallback: blue → lilac → mist only · Proceed with proposed or fallback?
 - [SYSTEM GAP] Missing: non-blue data-viz tiers in Blueprint · Needed for: chart colors (6m-1) · Proposed: Notification Circle colors at 100/55/25 % · Fallback: blue only · Proceed with proposed or fallback?
 - [SYSTEM GAP] Missing: --ck-motion-duration-glow and the count-up tokens · Needed for: rule 10 · Proposed: values in count-up-rule.md · Fallback: duration.cinematic + easing.enter · Proceed with proposed or fallback?
