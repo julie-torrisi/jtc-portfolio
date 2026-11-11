@@ -106,12 +106,13 @@ Consolidated 11/9 (Julie's calls: Rovo grid, one tile per app, Rovo glow in bran
 15l. App icons sit together in small containers of four (Claude, Figma, Cursor, Xcode; TestFlight, Simulator, Terminal, Slack).
 15m. Small pieces appear twice, at least a screen apart (paired by loop position); sw, ring and a few stickers appear once.
 
-## Gaps
+## v16 edit (11/11)
+16a. Every comment's action row ends with Blueprint's Comment action bar icons: the outline Like, then the thumbs-down "dislike" with no cuff, right-aligned (Blueprint › Content › Comment action bar, 2007:177322). Exported in dark mode, never redrawn.
+
 - [SYSTEM GAP] Missing: a warm glow token · Needed for: the rare amber glow (rule 10.2) · Proposed: --ck-glow-warm #FFB224, used on about one glow in nine · Fallback: blue → lilac → mist only · Proceed with proposed or fallback?
 - [SYSTEM GAP] Missing: non-blue data-viz tiers in Blueprint · Needed for: chart colors (6m-1) · Proposed: Notification Circle colors at 100/55/25 % · Fallback: blue only · Proceed with proposed or fallback?
 - [SYSTEM GAP] Missing: --ck-motion-duration-glow and the count-up tokens · Needed for: rule 10 · Proposed: values in count-up-rule.md · Fallback: duration.cinematic + easing.enter · Proceed with proposed or fallback?
 - v10 is on 7 × 128 (done 11/9).
 - Done v12: keyboard ↔ voice and word ↔ wordmark are kept at least 2,036 px apart both ways on a 5,152 px loop (decided 11/9: separate).
 - Figma temp page holds the v11 and v12 dark exports (dk3-*, dk4-*, v12-chart-sheet, v12-comp-sheet); delete with the page when the wall is final, after Julie's go.
-- [SYSTEM GAP] Missing: a thumbs-down (dislike) icon without the cuff · Needed for: the right-hand icon on each comment in the thread (rule 17; the export still shows the outline thumbs-up with a cuff) · Not found in Blueprint or Comments-Wall · Please send the icon or its Figma link.
 - Missing: Julie's new dark keyboard recording (6); Julie's photos + camera roll tray export (6g).
